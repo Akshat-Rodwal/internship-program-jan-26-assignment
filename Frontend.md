@@ -26,9 +26,136 @@
 
 **Your Solution for problem 1:**
 
-You need to put your solution here.
+1️⃣ Screens
 
----
+1. Upload Screen
+
+Drag & drop video upload
+
+File validation (type, size limit)
+
+Upload progress bar
+
+Start processing CTA
+
+Upload error handling
+
+2. Jobs List
+
+All jobs with status badge (Queued / Processing / Success / Failed)
+
+Filter + search
+
+Retry button for failed jobs
+
+Last updated timestamp
+
+3. Job Detail Screen
+
+Job metadata (created at, file name, size)
+
+Live status indicator
+
+Progress bar (percentage or step-based)
+
+Logs panel (collapsible)
+
+Cancel job button
+
+4. Results Screen
+
+Markdown preview (rendered Summary.md)
+
+Highlights with clickable timestamps
+
+Asset gallery with download buttons
+
+2️⃣ UI States
+
+For every job:
+
+Loading (skeleton UI)
+
+Queued
+
+Processing (with progress %)
+
+Partial output available
+
+Success
+
+Failed (error message + retry)
+
+Cancelled
+
+Each state has:
+
+Status badge color
+
+Toast notifications
+
+Clear CTA (Retry / View Result)
+
+3️⃣ API Calling Plan
+
+Job Creation
+POST /jobs
+
+Progress Tracking
+Hybrid approach:
+
+Default polling every 5 seconds
+
+If backend supports → Server Sent Events (SSE)
+
+Polling stops when:
+
+Job success / failed
+
+User navigates away (AbortController)
+
+Tab inactive (Page Visibility API)
+
+Retries:
+
+Exponential backoff (max 3 retries)
+
+Abort:
+
+AbortController on component unmount
+
+4️⃣ Caching Strategy
+
+Using React Query + IndexedDB
+
+Data	TTL
+Job list	2 min
+Job detail	1 min
+Results	10 min
+
+Invalidation triggers:
+
+New job created
+
+Retry action
+
+Manual refresh
+
+Status = processing → force refetch
+
+5️⃣ Debugging “Stuck Processing”
+
+Frontend debugging plan:
+
+Check network polling requests
+
+Display correlation ID in UI
+
+Show last updated timestamp
+
+Add collapsible raw API response panel
+
+Compare job ID with backend logs
 
 ## **Problem 2: LinkedIn Automation Platform (Frontend System Design)**
 
@@ -44,9 +171,92 @@ You need to put your solution here.
 
 **Your Solution for problem 2:**
 
-You need to put your solution here.
+1️⃣ Screens
 
----
+LinkedIn Connect screen
+
+Persona Editor
+
+Draft Variants (3 drafts view)
+
+Approval screen
+
+Scheduler
+
+Post History
+
+2️⃣ Form UX
+
+Persona:
+
+Required fields (tone, industry, audience)
+
+Character counter
+
+Inline validation errors
+
+Topic:
+
+Minimum 10 characters
+
+Spam keyword validation
+
+No scheduling in past
+
+Max 3 posts per day
+
+Confirmation modal before scheduling.
+
+3️⃣ API Lifecycle
+
+Draft generation:
+POST /drafts
+
+Lifecycle:
+
+Loading spinner
+
+Skeleton placeholders
+
+Success → render 3 drafts
+
+Error → retry CTA
+
+Approval:
+
+Optimistic UI update
+
+Posting:
+
+Strict confirmation from backend
+
+Abort draft generation on navigation.
+
+4️⃣ Caching
+
+Drafts cached (5 min TTL)
+
+Post history (2 min TTL)
+
+Invalidate after approval or posting
+
+5️⃣ Debugging Failures
+
+Show error reason
+
+Timestamp
+
+Correlation ID
+
+Retry button
+
+“Report Issue” button sends:
+
+Draft ID
+
+API error
+
+User environment info
 
 ## **Problem 3: DOCX Template → Bulk Generator (Frontend System Design)**
 
@@ -62,9 +272,83 @@ You need to put your solution here.
 
 **Your Solution for problem 3:**
 
-You need to put your solution here.
+1️⃣ Screens
 
----
+Template Upload
+
+Field Review
+
+Single Fill Form
+
+Bulk CSV Upload
+
+Bulk Run Status
+
+Report Table
+
+Downloads
+
+2️⃣ Field UI
+
+Field types:
+
+Text
+
+Number
+
+Date
+
+Each field supports:
+
+Required toggle
+
+Default value
+
+Inline validation
+
+Real-time error display
+
+3️⃣ Bulk UX
+
+CSV rules:
+
+Max 5MB
+
+Header validation
+
+Preview first 5 rows
+
+Optional mapping UI:
+
+Map CSV column → template field
+
+Progress UI:
+
+Percentage
+
+Success / failed counter
+
+Partial success:
+
+Download per-row error report
+
+4️⃣ Browser Caching
+
+Template metadata (10 min)
+
+Field schema (15 min)
+
+Bulk reports paginated cache
+
+5️⃣ Safe Downloads
+
+Backend provides signed URL
+
+Show download progress
+
+Disable duplicate clicks
+
+Handle expired URL gracefully
 
 ## **Problem 4: Character-Based Video Series Generator (Frontend System Design)**
 
@@ -79,9 +363,45 @@ You need to put your solution here.
 
 **Your Solution for problem 4:**
 
-You need to put your solution here.
+1️⃣ Screens
 
----
+Character Library
+
+Relationship Editor
+
+Episode Creator
+
+Episode Detail
+
+Asset Gallery
+
+2️⃣ Consistency UX
+
+Locked character badge per episode
+
+Version tags (v1, v2)
+
+Warning if character updated after episode creation
+
+3️⃣ Long Running Job UI
+
+Step-based progress (script → scenes → render)
+
+Percentage indicator
+
+Resume option
+
+Partial preview support
+
+Abort generation on navigation.
+
+4️⃣ Caching
+
+Character library (5 min TTL)
+
+Episode package (10 min TTL)
+
+Asset thumbnails cached by browser
 
 ## **Cross-Cutting** 
 
@@ -90,29 +410,141 @@ Answer these in **bullet points** (max 1 page total):
 1. **Frontend stack choice**
 
 * EDIT YOUR ANSWER HERE: Framework (Next.js/Vue/etc), state management, router, UI kit, why.
-  `<EDIT YOUR ANSWER HERE>`
+
+Framework: Next.js (App Router)
+
+State Management: React Query (server state) + Zustand (local state)
+
+UI Kit: Tailwind CSS + ShadCN
+
+Router: Next built-in routing
+
+Why:
+
+SSR + performance
+
+Strong ecosystem
+
+Better data fetching control
+
+Production scalability
 
 2. **API layer design**
 
 * Fetch/Axios choice, typed client generation (OpenAPI), error normalization, retries, request dedupe, abort controllers.
-  `
-  <EDIT YOUR ANSWER HERE>`
+  
+Axios with interceptors
+
+OpenAPI typed client generation
+
+Centralized error normalization
+
+Retry with exponential backoff
+
+Request deduplication via React Query
+
+AbortController for cancellation
 
 3. **Browser caching plan**
 
 * What you cache (GET responses, derived state), where (memory, IndexedDB, localStorage), TTL/invalidation rules.
 * How you handle “job status updates” without stale UI.
-  `
-  <EDIT YOUR ANSWER HERE>`
+  
+Cache:
+
+GET responses
+
+Job lists
+
+Draft previews
+
+Template metadata
+
+Storage:
+
+Memory (React Query)
+
+IndexedDB (persistent)
+
+localStorage (non-sensitive flags only)
+
+TTL rules:
+
+Jobs: 2 min
+
+Drafts: 5 min
+
+Results: 10 min
+
+For job updates:
+
+Force refetch if status = processing
+
+No stale status allowed
 
 4. **Debugging & observability**
 
 * Error boundaries, client-side logging approach, correlation id propagation, “report a problem” payload.
 * How you would debug: slow uploads, failed downloads, intermittent 500s.
-  `
-  <EDIT YOUR ANSWER HERE>`
+  
+React Error Boundaries
+
+Client logging via Sentry
+
+Correlation ID in headers
+
+“Report Problem” payload includes:
+
+user id
+
+job id
+
+API response
+
+browser info
+
+Debug scenarios:
+
+Slow uploads:
+
+Check network throttling
+
+Check file size
+
+Failed downloads:
+
+Check signed URL expiry
+
+Intermittent 500:
+
+Inspect retry logs
+
+Use correlation ID tracing
 
 5. **Security basics**
 
 * Token storage approach, CSRF considerations (if cookies), XSS avoidance for markdown rendering, safe file download patterns.
-  ` A<EDIT YOUR ANSWER HERE>`
+
+Token Handling:
+
+Prefer HttpOnly secure cookies
+
+If JWT → store in memory (not localStorage)
+
+CSRF:
+
+SameSite cookies
+
+CSRF token header validation
+
+XSS:
+
+Sanitize markdown using DOMPurify
+
+Avoid dangerouslySetInnerHTML
+
+Safe downloads:
+
+Signed URLs
+
+No direct file path exposure
